@@ -71,21 +71,6 @@ class Suffix_Array {
     void swapElem(int intIndex1,
                   int intIndex2) {
 
-        /*
-        // Memory Saving
-        
-        // Swap Suffix Strings
-        arrstrStrings[intIndex1] = arrstrStrings[intIndex1].concat(arrstrStrings[intIndex2]);
-        arrstrStrings[intIndex2] = arrstrStrings[intIndex1].substring(0, arrstrStrings[intIndex1].length() - arrstrStrings[intIndex2].length());
-        arrstrStrings[intIndex1] = arrstrStrings[intIndex1].substring(arrstrStrings[intIndex2].length());
-
-        // Swap Suffix Indices
-        arrintIndices[intIndex1] = arrintIndices[intIndex1] + arrintIndices[intIndex2];
-        arrintIndices[intIndex2] = arrintIndices[intIndex1] - arrintIndices[intIndex2];
-        arrintIndices[intIndex1] = arrintIndices[intIndex1] - arrintIndices[intIndex2];
-        */
-        
-        // Time Saving
         // Swap Suffix Strings
         String arrstrTemp = arrstrStrings[intIndex1];
         arrstrStrings[intIndex1] = arrstrStrings[intIndex2];
@@ -111,12 +96,12 @@ class Suffix_Array {
 
 
 
-public class CCDSALG_MP1_Objects {
+public class CCDSALG_MP1 {
 
     // Declare and Define String
-    static String strT = "tgtgtgtgcaccg";
-    // static String strT = "aataccggacaccatccctgcactagagccaatacctcgacactcgattaggaggctcacacttcccgcggccctaggcagttaaaccgtgaattgaagcggtcactgcgacagcttttcgtctatatgtgatcctcacggaacaaaagactgcgggaagcttaaaacgtgcacgcagaaagaggtaactagatggccgttcggccaatgtacttcctctgtcgtgcgcttaacagttctgcataggaaatctctgtggtgtacatgaactgtatcgagtacaccgtatgtagtccaggagcgtgcagaccggaagctaggatccccccattgtaagcagtcgatggttactgccgagttttaagcgtgttcacatgtccgctcagtggtcggtgccgatttggcccttctgaattgaacctagattgcgttgatccaagacattataagccaggctaggcacctcgctcatgactccggctacttaacgttcgcagggactgcaacgagcttgatccacactaccgtggattggaattgcaactcctattagcgaatacatacccagtcgccgatcttcgcaaggatgcacgcacacctcaaggcttggaaataatagtcacttaaagagggagatctttcctgcagccttattgtaacggttcccatccgtagtgaggggggttctcaggtgactttccggagtcgtccacagaactaaatcatgcagagggaccgatacgcaacggcttgcaaattagtggtccgggctacagcggccttatataccactaagaagacagagatgagttgaaaaatcctagtagcacccttatagtctccattcagatggtctagccgatgaccctgctctaaaccgacagccgccgcacccatcggacatgatcagttcggatgtttcagggtggtagtcgaccgagtagcgccttgctatcccaggaaattgttgtacgtaccttccgatgcattagcgccgggcaaacaaggcaccccaatgcaacctaataccggacaccatccctgcactagagccaatacctcgacactcgattaggaggctcacacttcccgcggccctaggcagttaaaccgtgaattgaagcggtcactgcgacagcttttcgtctatatgtgatcctcacggaacaaaagactgcgggaagcttaaaacgtgcacgcagaaagaggtaactagatggccgttcggccaatgtacttcctctgtcgtgcgcttaacagttctgcataggaaatctctgtggtgtacatgaactgtatcgagtacaccgtatgtagtccaggagcgtgcagaccggaagctaggatccccccattgtaagcagtcgatggttactgccgagttttaagcgtgttcacatgtccgctcagtggtcggtgccgatttggcccttctgaattgaacctagattgcgttgatccaagacattataagccaggctaggcacctcgctcatgactccggctacttaacgttcgcagggactgcaacgagcttgatccacactaccgtggattggaattgcaactcctattagcgaatacatacccagtcgccgatcttcgcaaggatgcacgcacacctcaaggcttggaaataatagtcacttaaagagggagatctttcctgcagccttattgtaacggttcccatccgtagtgaggggggttctcaggtgactttccggagtcgtccacagaactaaatcatgcagagggaccgatacgcaacggcttgcaaattagtggtccgggctacagcggccttatataccactaagaagacagagatgagttgaaaaatcctagtagcacccttatagtctccattcagatggtctagccgatgaccctgctctaaaccgacagccgccgcacccatcggacatgatcagttcggatgtttcagggtggtagtcgaccgagtagcgccttgctatcccaggaaattgttgtacgtaccttccgatgcattagcgccgggcaaacaaggcaccccaatgcaacct";
-
+    // static String strT = "tgtgtgtgcaccg";
+    // static String strT = "";
+    static String strT = "ccgcctgtcatttacactatggattggacgctatctacaaagatttactgcgtctcttgtgcggcaaatatactcatctgtagctagctattacactgagcaactggcacgactggaatgcgcttttcggaggttctacggaagacgagttgttcgttttgaatgtatgaccaagcagacctatctcgggacaccttgtgattaataaccgaagaattcattattatcatagaccttgccggcatacagagcccaagagttaggctatacgcggtgcccattctgttctccccccagtacacacaaggcatgtagaccctctaactatgtacggggtaatcaggattaactaagcatcggtgtcgtaactggacgaagacatatacgacctgaggtatgatgtatccctagggatcgccgataagatagtaacggctggttacatttccctccgcgtgtcctcctcgattcctcttggacgacactccccgcgggaaagaagtatggtggcgtatgtagaatcaccgtcttgattacctgttacgtgccaggtactcctcatgcgattacagagactgtcctcaaggcaatagcgtgtaatgaattactcaacgggctctcagggtgttccgattctaacgccaatcaaggcgcgcagcactcattcatgggtagcgacacgactcacacttcgattactttgccatggcataaccttagtctcaagggaagtcccccttggcgatcatacaaggcgccagaggaggaagccgggatggatccaatttcacttattgtccacttggatgctggacgcgttacggtcgtactccgtcaatgggcacgcgtacgtcggagaaagagatctagaatagcgcttgttagtccttgtagcgatgatctagcagctccatattctcttcaccgtatgttaaagcgcggagtattaactcggcgcgttaaccaattacgtgtcgcccggtacgaccaatcgaatgactcagttctgtacgccggtacctcg";
 
 
 
@@ -332,11 +317,11 @@ public class CCDSALG_MP1_Objects {
     public static void main(String[] args) {
 
         // Declare Monitor Variables
-        // Initiate Memory Values
-        Runtime runtime = Runtime.getRuntime();
-        long longBubbleMem;
-        long longMergeMem;
+        // Output Arrays
+        int[] arrintBubbleOutput = new int[strT.length()];
+        int[] arrintMergeOutput = new int[strT.length()];
         // Initiate Time values
+        Runtime runtime = Runtime.getRuntime();
         long longBubbleTime;
         long longMergeTime;
 
@@ -346,40 +331,40 @@ public class CCDSALG_MP1_Objects {
 
 
 
-        // Bubble Sort Output
-        // Note Start Memory and Time
-        longBubbleMem = runtime.totalMemory() - runtime.freeMemory();
+        // Bubble Sort
+        // Note Start Time
         longBubbleTime = System.nanoTime();
 
-        // Run and Display Bubble Sort Answer
-        System.out.println("Bubble Sort Output:");
-        printArray(Bubble_Sort(strT, strT.length()));
+        // Run Bubble Sort
+        arrintBubbleOutput = Bubble_Sort(strT, strT.length());
 
-        // Note End Memory and Time
-        longBubbleMem = runtime.totalMemory() - runtime.freeMemory() - longBubbleMem;
+        // Note End Time
         longBubbleTime = System.nanoTime() - longBubbleTime;
 
+        // Print Bubble Sort Output
+        System.out.println("Bubble Sort Output:");
+        printArray(arrintBubbleOutput);
 
-        // Merge Sort Output
-        // Note Start Memory and Time
-        longMergeMem = runtime.totalMemory() - runtime.freeMemory();
+
+
+        // Merge Sort
+        // Note Start Time
         longMergeTime = System.nanoTime();
 
-        // Run and Display Merge Sort Answer
-        System.out.println("Merge Sort Output:");
-        printArray(Merge_Sort(strT, strT.length()));
+        // Run Merge Sort
+        arrintMergeOutput = Merge_Sort(strT, strT.length());
 
-        // Note End Memory and Time
-        longMergeMem = runtime.totalMemory() - runtime.freeMemory() - longMergeMem;
+        // Note End Time
         longMergeTime = System.nanoTime() - longMergeTime;
 
+        // Print Bubble Sort Output
+        System.out.println("Merge Sort Output:");
+        printArray(arrintMergeOutput);
 
-        // Display Memory and Time Differences
-        // Memory
-        System.out.printf("\nBubble Sort Memory:   %6.7f Kb\n", (double)longBubbleMem/(1024));
-        System.out.printf("Merge Sort Memory:    %6.7f Kb\n", (double)longMergeMem/(1024));
-        System.out.printf("Memory Difference:    %6.7f Kb\n", (double)(longBubbleMem - longMergeMem)/(1024));
-        // Time
+
+
+
+        // Display Time Differences
         System.out.printf("\nBubble Sort Runtime:   %3.7f seconds\n", (double)(longBubbleTime) / 1_000_000_000);
         System.out.printf("Merge Sort Runtime:    %3.7f seconds\n", (double)(longMergeTime) / 1_000_000_000);
         System.out.printf("Runtime Difference:    %3.7f seconds\n", (double)(longBubbleTime - longMergeTime) / 1_000_000_000);
