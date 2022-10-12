@@ -65,9 +65,13 @@ class Suffix_Array {
     }
 
 
-
-
-
+    /**
+     * swapElem
+     * - Swaps two elements in the Suffix Array.
+     *
+     * @param intIndex1 Index of first element to swap.
+     * @param intIndex2 Index of second element to swap.
+     */
     void swapElem(int intIndex1,
                   int intIndex2) {
 
@@ -83,7 +87,14 @@ class Suffix_Array {
     }
 
 
-
+    /**
+     * copyElem
+     * - Copies an element from one Suffix Array to another.
+     *
+     * @param objSrcSuffixArray Source Suffix Array.
+     * @param intCopyIndex Index of element to copy from the Source Suffix Array.
+     * @param intPasteIndex Index of where to paste in the Destination Suffix Array.
+     */
     void copyElem(Suffix_Array objSrcSuffixArray,
                   int intCopyIndex,
                   int intPasteIndex) {
@@ -108,6 +119,12 @@ public class CCDSALG_MP1 {
 
     /* ---------- ---------- General Purpose Methods ---------- ---------- */
 
+    /**
+     * printSuffixArray
+     * - Prints the Suffix Array.
+     *
+     * @param arrintA Suffix Array to print.
+     */
     private static void printArray (int[] arrintA) {
 
         System.out.print("[ ");
@@ -126,17 +143,17 @@ public class CCDSALG_MP1 {
 
     /* ---------- ---------- Bubble Sort Methods ---------- ---------- */
 
-    /*
+    /**
     * Bubble_Sort
     * - Sorts a String composing a sequence of the characters {a,c,g,t} in ascending order using the Bubble Sort Algorithm.
     *
-    * @param strT String to be sorted
-    * @param intStringLen Number of characters in the String
+    * @param strT String to be sorted.
+    * @param intStringLen Number of characters in the String.
     *
-    * @return Suffix Array of the characters of strT in ascending order
-    * */
+    * @return Suffix Array of the characters of strT in ascending order.
+    */
     private static int[] Bubble_Sort (String strT,
-                              int intStringLen) {
+                                      int intStringLen) {
 
         // Define variables
             // Initialize Object Arrays
@@ -170,15 +187,15 @@ public class CCDSALG_MP1 {
 
     /* ---------- ---------- Merge Sort Methods ---------- ---------- */
 
-    /*
+    /**
      * Merge_Sort
      * - Sorts a String composing a sequence of the characters {a,c,g,t} in ascending order using the Merge Sort Algorithm.
      *
-     * @param strT String to be sorted
-     * @param intStringLen Number of characters in the String
+     * @param strT String to be sorted.
+     * @param intStringLen Number of characters in the String.
      *
-     * @return Suffix Array of the characters of strT in ascending order
-     * */
+     * @return Suffix Array of the characters of strT in ascending order.
+     */
     private static int[] Merge_Sort (String strT,
                                      int intStringLen) {
 
@@ -199,9 +216,19 @@ public class CCDSALG_MP1 {
 
 
 
+    /**
+     * sortHalves
+     * - Sorts the Suffix Array by dividing the array into two halves and sorting each half recursively.
+     *
+     * @param objSuffixArray Suffix Array to be sorted.
+     * @param intStartIndex Starting index of the Suffix Array.
+     * @param intEndIndex Ending index of the Suffix Array.
+     *
+     * @return Sorted Suffix Array
+     */
     private static Suffix_Array sortHalves (Suffix_Array objSuffixArray,
-                                    int intStartIndex,
-                                    int intEndIndex) {
+                                            int intStartIndex,
+                                            int intEndIndex) {
 
         // If Start Index is less than End Index, There is more than 1 element
         if (intStartIndex < intEndIndex) {
@@ -232,6 +259,17 @@ public class CCDSALG_MP1 {
 
 
 
+    /**
+     * mergeHalves
+     * - Merges two halves of the Suffix Array and sorts them.
+     *
+     * @param objSuffixArray Suffix Array to be sorted.
+     * @param intStartIndex Starting index of the Suffix Array.
+     * @param intMidpoint Midpoint of the Suffix Array.
+     * @param intEndIndex Ending index of the Suffix Array.
+     *
+     * @return Sorted Suffix Array.
+     */
     private static Suffix_Array mergeHalves (Suffix_Array objSuffixArray,
                                              int intStartIndex,
                                              int intMidpoint,
@@ -318,10 +356,9 @@ public class CCDSALG_MP1 {
 
         // Declare Monitor Variables
         // Output Arrays
-        int[] arrintBubbleOutput = new int[strT.length()];
-        int[] arrintMergeOutput = new int[strT.length()];
+        int[] arrintBubbleOutput;
+        int[] arrintMergeOutput;
         // Initiate Time values
-        Runtime runtime = Runtime.getRuntime();
         long longBubbleTime;
         long longMergeTime;
 
@@ -365,8 +402,11 @@ public class CCDSALG_MP1 {
 
 
         // Display Time Differences
-        System.out.printf("\nBubble Sort Runtime:   %3.7f seconds\n", (double)(longBubbleTime) / 1_000_000_000);
-        System.out.printf("Merge Sort Runtime:    %3.7f seconds\n", (double)(longMergeTime) / 1_000_000_000);
-        System.out.printf("Runtime Difference:    %3.7f seconds\n", (double)(longBubbleTime - longMergeTime) / 1_000_000_000);
+        System.out.printf("\nBubble Sort Runtime:   %3.7f seconds\n",
+                (double)(longBubbleTime) / 1_000_000_000);
+        System.out.printf("Merge Sort Runtime:    %3.7f seconds\n",
+                (double)(longMergeTime) / 1_000_000_000);
+        System.out.printf("Runtime Difference:    %3.7f seconds\n",
+                (double)(longBubbleTime - longMergeTime) / 1_000_000_000);
     }
 }
