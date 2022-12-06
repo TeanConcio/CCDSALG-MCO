@@ -19,40 +19,31 @@ public class CCDSALG_MCO2 {
 
 
     // Run Mode
-    static final boolean BULK_RUN_MODE = false;
+    static final boolean BULK_RUN_MODE = true;
     static final int DATA_STRUCTURE_TO_RUN = BOTH_DATA_STRUCTURES;
 
 
     // Number of Repeats for Bulk Run Mode
-    static final int NUMBER_OF_REPEATS = 30;
+    static final int NUMBER_OF_REPEATS = 50;
 
     // Number of Setbacks for Bulk Run Mode
         // Java code runs slower at the start
         // Setbacks are used to lessen the effects of the slow start
-    static final int NUMBER_OF_SETBACKS = 100;
+    static final int NUMBER_OF_SETBACKS = 50;
 
 
     // Length of String
     static final int STRING_LENGTH = (int) Math.pow(10, 6);
 
-    // Max and Min K-mer
-    static final int MIN_KMER = 5;
-    static final int MAX_KMER = 5;
+    // K-mer
+    static final int KMER = 5;
 
     // Declare and Define String and K-mer
         // Comment out the String and K-mer you do not want to use
     // Default
     static String strDNA = "taccaccaccatag"; static int intKmer = 6;
     // Custom
-    //static String strDNA = generateString(STRING_LENGTH);
-    // static int intKmer = generateRandomNum(MIN_KMER, MAX_KMER);
-
-    
-    // Hash Table Hash Function Mode
-        // 1 = FNV1a
-        // 2 = XXHASH32 + hashCode
-        // 3 = hashCode
-    static final int HASH_FUNCTION_MODE = 1;
+    //static String strDNA = generateString(STRING_LENGTH); static int intKmer = KMER;
 
 
 
@@ -61,8 +52,14 @@ public class CCDSALG_MCO2 {
     /* ---------- ---------- Global Variables ---------- ---------- */
 
     // Build and Search Time of Data Structures
-    static ArrayList<Double> listdblHashTableBuildTime = new ArrayList<>();
-    static ArrayList<Double> listdblHashTableSearchTime = new ArrayList<>();
+    static ArrayList<Integer> listintFNV1aHashTableCollisions = new ArrayList<>();
+    static ArrayList<Double> listdblFNV1aHashTableBuildTime = new ArrayList<>();
+    static ArrayList<Double> listdblFNV1aHashTableSearchTime = new ArrayList<>();
+
+    static ArrayList<Integer> listintXXHASH32HashTableCollisions = new ArrayList<>();
+    static ArrayList<Double> listdblXXHASH32HashTableBuildTime = new ArrayList<>();
+    static ArrayList<Double> listdblXXHASH32HashTableSearchTime = new ArrayList<>();
+
     static ArrayList<Double> listdblBSTBuildTime = new ArrayList<>();
     static ArrayList<Double> listdblBSTSearchTime = new ArrayList<>();
 
@@ -81,10 +78,20 @@ public class CCDSALG_MCO2 {
 
         // Display only time to use for bulk running
         else {
+
+            // Display DNA String and K-mer
+            System.out.printf("DNA String Length: %d\n", STRING_LENGTH);
+            System.out.println("K-mer = " + KMER);
             
-            if (DATA_STRUCTURE_TO_RUN == HASH_TABLE_ONLY || 
-                    DATA_STRUCTURE_TO_RUN == BOTH_DATA_STRUCTURES)
-                runBulkHashTable();
+            if (DATA_STRUCTURE_TO_RUN == HASH_TABLE_ONLY ||
+                    DATA_STRUCTURE_TO_RUN == BOTH_DATA_STRUCTURES) {
+
+                // FNV1a
+                runBulkHashTable(1);
+
+                // XXHASH32
+                runBulkHashTable(2);
+            }
 
             if (DATA_STRUCTURE_TO_RUN == BINARY_SEARCH_TREE_ONLY ||
                     DATA_STRUCTURE_TO_RUN == BOTH_DATA_STRUCTURES)
@@ -111,6 +118,7 @@ public class CCDSALG_MCO2 {
      */
     public static void runHashTable (String strDNA,
                                      int intKmer,
+                                     int intHashFunction,
                                      boolean boolAddToList) {
 
         // Initiate Hash Table
@@ -131,7 +139,7 @@ public class CCDSALG_MCO2 {
         longBuildTime = System.nanoTime();
 
         // Run Hash Table Setup
-        hashTable = new HashTable(strDNA, intKmer);
+        hashTable = new HashTable(strDNA, intKmer, intHashFunction);
 
         // Note End Time
         longBuildTime = System.nanoTime() - longBuildTime;
@@ -157,8 +165,21 @@ public class CCDSALG_MCO2 {
         // Add Times to List
         if (boolAddToList) {
 
-            listdblHashTableBuildTime.add(1.0 * longBuildTime / 1_000);
-            listdblHashTableSearchTime.add(1.0 * longSearchTime / 1_000);
+            switch (intHashFunction) {
+
+                case 1:
+                    listintFNV1aHashTableCollisions.add(hashTable.getIntCollisionCount());
+                    listdblFNV1aHashTableBuildTime.add(1.0 * longBuildTime / 1_000);
+                    listdblFNV1aHashTableSearchTime.add(1.0 * longSearchTime / 1_000);
+                    break;
+
+                case 2:
+                    listintXXHASH32HashTableCollisions.add(hashTable.getIntCollisionCount());
+                    listdblXXHASH32HashTableBuildTime.add(1.0 * longBuildTime / 1_000);
+                    listdblXXHASH32HashTableSearchTime.add(1.0 * longSearchTime / 1_000);
+                    break;
+            }
+
         }
 
 
@@ -267,9 +288,17 @@ public class CCDSALG_MCO2 {
 
         // If Hash Table or Both Structures Mode
         if (DATA_STRUCTURE_TO_RUN == HASH_TABLE_ONLY ||
-                DATA_STRUCTURE_TO_RUN == BOTH_DATA_STRUCTURES)
-            // Run Hash Table
-            runHashTable(strDNA, intKmer, true);
+                DATA_STRUCTURE_TO_RUN == BOTH_DATA_STRUCTURES) {
+
+            // Run FNV1a Hash Table
+            runHashTable(strDNA, intKmer, 1, true);
+
+            displayDivider();
+
+            // Run XXHASH32 Hash Table
+            runHashTable(strDNA, intKmer, 2, true);
+        }
+
 
         if (DATA_STRUCTURE_TO_RUN == BOTH_DATA_STRUCTURES)
             displayDivider();
@@ -289,13 +318,23 @@ public class CCDSALG_MCO2 {
         if (DATA_STRUCTURE_TO_RUN == HASH_TABLE_ONLY ||
                 DATA_STRUCTURE_TO_RUN == BOTH_DATA_STRUCTURES) {
 
-            System.out.printf("Hash Table Build Time:      %10.1f microseconds\n",
-                    listdblHashTableBuildTime.get(0));
-            System.out.printf("Hash Table Search Time:     %10.1f microseconds\n",
-                    listdblHashTableSearchTime.get(0));
-            System.out.printf("Total Hash Table Time:      %10.1f microseconds\n\n",
-                    listdblHashTableBuildTime.get(0) + listdblHashTableSearchTime.get(0));
+            // FNV1a Hash Table
+            System.out.printf("FNV1a Hash Table Build Time:      %10.1f microseconds\n",
+                    listdblFNV1aHashTableBuildTime.get(0));
+            System.out.printf("FNV1a Hash Table Search Time:     %10.1f microseconds\n",
+                    listdblFNV1aHashTableSearchTime.get(0));
+            System.out.printf("Total FNV1a Hash Table Time:      %10.1f microseconds\n\n",
+                    listdblFNV1aHashTableBuildTime.get(0) + listdblFNV1aHashTableSearchTime.get(0));
+
+            // XXHASH32 Hash Table
+            System.out.printf("XXHASH32 Hash Table Build Time:      %10.1f microseconds\n",
+                    listdblXXHASH32HashTableBuildTime.get(0));
+            System.out.printf("XXHASH32 Hash Table Search Time:     %10.1f microseconds\n",
+                    listdblXXHASH32HashTableSearchTime.get(0));
+            System.out.printf("Total XXHASH32 Hash Table Time:      %10.1f microseconds\n\n",
+                    listdblXXHASH32HashTableBuildTime.get(0) + listdblXXHASH32HashTableSearchTime.get(0));
         }
+
         // Binary Search Tree
         if (DATA_STRUCTURE_TO_RUN == BINARY_SEARCH_TREE_ONLY ||
                 DATA_STRUCTURE_TO_RUN == BOTH_DATA_STRUCTURES) {
@@ -316,18 +355,42 @@ public class CCDSALG_MCO2 {
      * - Runs the Hash Table implementation multiple times.
      *      Displays the average times.
      */
-    public static void runBulkHashTable () {
+    public static void runBulkHashTable (int intHashFunction) {
 
         boolean boolGetResults = false;
+
+        double dblAvgCollisions = 0;
 
         double dblAvgBuildTime = 0;
         double dblAvgSearchTime = 0;
         double dblAvgTotalTime = 0;
 
 
+        // Get Hash Function Name and Array Lists
+        String strHashFunction = "";
+        ArrayList<Integer> listintCollisions = new ArrayList<>();
+        ArrayList<Double> listdblBuildTime = null;
+        ArrayList<Double> listdblSearchTime =  null;
+        switch (intHashFunction) {
+
+            case 1:
+                strHashFunction = "FNV1a";
+                listintCollisions = listintFNV1aHashTableCollisions;
+                listdblBuildTime = listdblFNV1aHashTableBuildTime;
+                listdblSearchTime = listdblFNV1aHashTableSearchTime;
+                break;
+
+            case 2:
+                strHashFunction = "XXHASH32";
+                listintCollisions = listintXXHASH32HashTableCollisions;
+                listdblBuildTime = listdblXXHASH32HashTableBuildTime;
+                listdblSearchTime = listdblXXHASH32HashTableSearchTime;
+                break;
+        }
+
         displayDivider();
 
-        System.out.println("Hash Table Bulk Run\n");
+        System.out.printf("%s Hash Table Run\n\n", strHashFunction);
         
         System.out.printf("Running %d Setbacks: \n", NUMBER_OF_SETBACKS);
 
@@ -338,16 +401,15 @@ public class CCDSALG_MCO2 {
 
                 boolGetResults = true;
                 // Print Hash Table Trials
-                System.out.printf("\nRunning Hash Table %d Times...\n\n",
-                        NUMBER_OF_REPEATS);
+                System.out.printf("\nRunning %s Hash Table %d Times...\n\n",
+                        strHashFunction, NUMBER_OF_REPEATS);
             }
 
-            // Randomize DNA and Kmer
+            // Randomize DNA
             strDNA = generateString(STRING_LENGTH);
-            intKmer = generateRandomNum(MIN_KMER, MAX_KMER);
 
             // Run Hash Table
-            runHashTable(strDNA, intKmer, boolGetResults);
+            runHashTable(strDNA, intKmer, intHashFunction, boolGetResults);
 
             // Loading
             if (!boolGetResults) {
@@ -359,38 +421,50 @@ public class CCDSALG_MCO2 {
             }
         }
 
-        // Print Build Time
-        System.out.println("Hash Table Build Times in Microseconds:");
-        for (Double dblHashTableBuildTime : listdblHashTableBuildTime) {
 
-            System.out.printf("%.1f ", dblHashTableBuildTime);
-            dblAvgBuildTime += dblHashTableBuildTime;
+        // Print Collision Count
+        System.out.printf("%s Hash Table Collisions:\n", strHashFunction);
+        for (Integer intCollision : listintCollisions) {
+
+            System.out.printf("%d ", intCollision);
+            dblAvgCollisions += intCollision;
         }
-        System.out.printf("\nAverage Hash Table Build Time: %.3f\n\n",
-                dblAvgBuildTime / NUMBER_OF_REPEATS);
+        System.out.printf("\nAverage %s Hash Table Collisions: %.1f\n\n",
+                strHashFunction, dblAvgCollisions / NUMBER_OF_REPEATS);
+
+        // Print Build Time
+        System.out.printf("%s Hash Table Build Times in Microseconds:\n",
+                strHashFunction);
+        for (Double dblSearchTime : listdblBuildTime) {
+
+            System.out.printf("%.1f ", dblSearchTime);
+            dblAvgBuildTime += dblSearchTime;
+        }
+        System.out.printf("\nAverage %s Hash Table Build Time: %.3f\n\n",
+                strHashFunction, dblAvgBuildTime / NUMBER_OF_REPEATS);
 
         // Print Search Time
-        System.out.println("Hash Table Search Times in Microseconds:");
-        for (Double dblHashTableSearchTime : listdblHashTableSearchTime) {
+        System.out.printf("%s Hash Table Search Times in Microseconds:\n",
+                strHashFunction);
+        for (Double dblSearchTime : listdblSearchTime) {
 
-            System.out.printf("%.1f ", dblHashTableSearchTime);
-            dblAvgSearchTime += dblHashTableSearchTime;
+            System.out.printf("%.1f ", dblSearchTime);
+            dblAvgSearchTime += dblSearchTime;
         }
-        System.out.printf("\nAverage Hash Table Search Time: %.3f\n\n",
-                dblAvgSearchTime / NUMBER_OF_REPEATS);
+        System.out.printf("\nAverage %s Hash Table Search Time: %.3f\n\n",
+                strHashFunction, dblAvgSearchTime / NUMBER_OF_REPEATS);
 
         // Print Total Time
-        System.out.println("Total Hash Table Times in Microseconds:");
-        for (int i = 0; i < listdblHashTableSearchTime.size(); i++) {
+        System.out.printf("%s Hash Table Total Times in Microseconds:\n",
+                strHashFunction);
+        for (int i = 0; i < listdblBuildTime.size(); i++) {
 
             System.out.printf("%.1f ",
-                    listdblHashTableSearchTime.get(i) +
-                            listdblHashTableBuildTime.get(i));
-            dblAvgTotalTime += listdblHashTableSearchTime.get(i) +
-                    listdblHashTableBuildTime.get(i);
+                    listdblBuildTime.get(i) + listdblSearchTime.get(i));
+            dblAvgTotalTime += listdblBuildTime.get(i) + listdblSearchTime.get(i);
         }
-        System.out.printf("\nAverage Total Hash Table Time: %.3f\n",
-                dblAvgTotalTime / NUMBER_OF_REPEATS);
+        System.out.printf("\nAverage %s Hash Table Total Time: %.3f\n\n",
+                strHashFunction, dblAvgTotalTime / NUMBER_OF_REPEATS);
     }
 
 
@@ -426,9 +500,8 @@ public class CCDSALG_MCO2 {
                         NUMBER_OF_REPEATS);
             }
 
-            // Randomize DNA and Kmer
+            // Randomize DNA
             strDNA = generateString(STRING_LENGTH);
-            intKmer = generateRandomNum(MIN_KMER, MAX_KMER);
 
             // Run Binary Search Tree
             runBinarySearchTree(strDNA, intKmer, boolGetResults);
@@ -498,8 +571,8 @@ public class CCDSALG_MCO2 {
         return (int) (Math.random() * (intMax - intMin + 1) + intMin);
     }
 
-    
-    
+
+
     /** 
      * generateString
      * - Generates a random string of ['a', 'g', 'c', 't'] of length intLength.
@@ -650,6 +723,7 @@ class HashTable {
     private ArrayList<HashNode> listBuckets;
 
     // Table Status;
+    private int intHashFunction;
     private int intStrandCount = 0;
     private int intNodeCount = 0;
     private int intBucketCount = 0;
@@ -674,12 +748,14 @@ class HashTable {
      * @param intKmer The K-mer Length.
      */
     public HashTable (String strDNA,
-                      int intKmer) {
+                      int intKmer,
+                      int intHashFunction) {
 
         // Create Bucket List
         this.create();
 
         // Initialize Values
+        this.intHashFunction = intHashFunction;
         this.intBucketCount = this.computeBucketCount(strDNA.length(), intKmer);
         this.intEmptyBucketCount = this.intBucketCount;
 
@@ -779,7 +855,7 @@ class HashTable {
 
         int intHashCode = 0;
 
-        switch (CCDSALG_MCO2.HASH_FUNCTION_MODE) {
+        switch (this.intHashFunction) {
 
             case 1:
                 // Hash Function 1 : FNV1a
@@ -789,11 +865,6 @@ class HashTable {
             case 2:
                 // Hash Function 2 : XXHash32 + hashCode
                 intHashCode = (int)(new XXHash32(strDNAStrand.hashCode())).getValue();
-                break;
-
-            case 3:
-                // Hash Function 3 : hashCode
-                intHashCode = strDNAStrand.hashCode();
                 break;
 
             default:
@@ -952,6 +1023,26 @@ class HashTable {
      */
     public void displayDetails () {
 
+        // Display Hash Function Used
+        System.out.print("\tHash Function Used: ");
+        switch (this.intHashFunction) {
+
+            case 1:
+                // Hash Function 1 : FNV1a
+                System.out.println("FNV1a");
+                break;
+
+            case 2:
+                // Hash Function 2 : XXHash32 + hashCode
+                System.out.println("XXHash32 + hashCode");
+                break;
+
+            default:
+                // Error
+                System.out.println("None");
+        }
+
+
         System.out.println("\tTotal DNA Strand Count: " + this.intStrandCount);
         System.out.println("\tUnique DNA Strands Count: " + this.intNodeCount);
         System.out.println("\tBucket Count: " + this.intBucketCount);
@@ -967,6 +1058,8 @@ class HashTable {
     /* ---------- HashTable Getters and Setters ---------- */
 
     public int getIntNodeCount() {return intNodeCount;}
+
+    public int getIntCollisionCount() {return intCollisionCount;}
 }
 
 
