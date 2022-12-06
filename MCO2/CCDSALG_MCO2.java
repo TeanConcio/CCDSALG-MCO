@@ -19,7 +19,7 @@ public class CCDSALG_MCO2 {
 
 
     // Run Mode
-    static final boolean BULK_RUN_MODE = true;
+    static final boolean BULK_RUN_MODE = false;
     static final int DATA_STRUCTURE_TO_RUN = BOTH_DATA_STRUCTURES;
 
 
@@ -44,7 +44,8 @@ public class CCDSALG_MCO2 {
     // Default
     static String strDNA = "taccaccaccatag"; static int intKmer = 6;
     // Custom
-    //static String strDNA = generateString(STRING_LENGTH); static int intKmer = generateRandomNum(MIN_KMER, MAX_KMER);
+    //static String strDNA = generateString(STRING_LENGTH);
+    // static int intKmer = generateRandomNum(MIN_KMER, MAX_KMER);
 
     
     // Hash Table Hash Function Mode
@@ -290,8 +291,10 @@ public class CCDSALG_MCO2 {
 
             System.out.printf("Hash Table Build Time:      %10.1f microseconds\n",
                     listdblHashTableBuildTime.get(0));
-            System.out.printf("Hash Table Search Time:     %10.1f microseconds\n\n",
+            System.out.printf("Hash Table Search Time:     %10.1f microseconds\n",
                     listdblHashTableSearchTime.get(0));
+            System.out.printf("Total Hash Table Time:      %10.1f microseconds\n\n",
+                    listdblHashTableBuildTime.get(0) + listdblHashTableSearchTime.get(0));
         }
         // Binary Search Tree
         if (DATA_STRUCTURE_TO_RUN == BINARY_SEARCH_TREE_ONLY ||
@@ -299,8 +302,10 @@ public class CCDSALG_MCO2 {
 
             System.out.printf("Binary Search Tree Build Time:      %10.1f microseconds\n",
                     listdblBSTBuildTime.get(0));
-            System.out.printf("Binary Search Tree Search Time:     %10.1f microseconds\n\n",
+            System.out.printf("Binary Search Tree Search Time:     %10.1f microseconds\n",
                     listdblBSTSearchTime.get(0));
+            System.out.printf("Total Binary Search Tree Time:      %10.1f microseconds\n\n",
+                    listdblBSTBuildTime.get(0) + listdblBSTSearchTime.get(0));
         }
     }
 
@@ -317,6 +322,7 @@ public class CCDSALG_MCO2 {
 
         double dblAvgBuildTime = 0;
         double dblAvgSearchTime = 0;
+        double dblAvgTotalTime = 0;
 
 
         displayDivider();
@@ -370,8 +376,21 @@ public class CCDSALG_MCO2 {
             System.out.printf("%.1f ", dblHashTableSearchTime);
             dblAvgSearchTime += dblHashTableSearchTime;
         }
-        System.out.printf("\nAverage Hash Table Search Time: %.3f\n",
+        System.out.printf("\nAverage Hash Table Search Time: %.3f\n\n",
                 dblAvgSearchTime / NUMBER_OF_REPEATS);
+
+        // Print Total Time
+        System.out.println("Total Hash Table Times in Microseconds:");
+        for (int i = 0; i < listdblHashTableSearchTime.size(); i++) {
+
+            System.out.printf("%.1f ",
+                    listdblHashTableSearchTime.get(i) +
+                            listdblHashTableBuildTime.get(i));
+            dblAvgTotalTime += listdblHashTableSearchTime.get(i) +
+                    listdblHashTableBuildTime.get(i);
+        }
+        System.out.printf("\nAverage Total Hash Table Time: %.3f\n",
+                dblAvgTotalTime / NUMBER_OF_REPEATS);
     }
 
 
@@ -387,6 +406,7 @@ public class CCDSALG_MCO2 {
 
         double dblAvgBuildTime = 0;
         double dblAvgSearchTime = 0;
+        double dblAvgTotalTime = 0;
 
 
         displayDivider();
@@ -440,8 +460,21 @@ public class CCDSALG_MCO2 {
             System.out.printf("%.1f ", dblBSTSearchTime);
             dblAvgSearchTime += dblBSTSearchTime;
         }
-        System.out.printf("\nAverage Binary Search Tree Search Time: %.3f\n",
+        System.out.printf("\nAverage Binary Search Tree Search Time: %.3f\n\n",
                 dblAvgSearchTime / NUMBER_OF_REPEATS);
+
+        // Print Total Time
+        System.out.println("Total Binary Search Tree Times in Microseconds:");
+        for (int i = 0; i < listdblBSTSearchTime.size(); i++) {
+
+            System.out.printf("%.1f ",
+                    listdblBSTSearchTime.get(i) +
+                            listdblBSTBuildTime.get(i));
+            dblAvgTotalTime += listdblBSTSearchTime.get(i) +
+                    listdblBSTBuildTime.get(i);
+        }
+        System.out.printf("\nAverage Total Binary Search Tree Time: %.3f\n",
+                dblAvgTotalTime / NUMBER_OF_REPEATS);
     }
 
 
@@ -533,7 +566,8 @@ public class CCDSALG_MCO2 {
 
                 // Print Node String and Count
                 System.out.printf("\t| %s%s |     %4d    |\n",
-                        arrstrDNAStrands[i], " ".repeat(Math.abs(intKmer-7)), arrintCounts[i]);
+                        arrstrDNAStrands[i], " ".repeat(Math.abs(intKmer-7)),
+                        arrintCounts[i]);
             }
 
             System.out.println("\t" + "-".repeat(25));
